@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library System - Search Books</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Library System</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li> <!-- Redirect to the index page (list of books) -->
+                <li><a href="search.html">Search Books</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Search Form for Books -->
+        <h2>Search for Books</h2>
+        <form id="search-form">
+            <input type="text" id="searchQuery" placeholder="Search by title or author" required>
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- Display search results -->
+        <div id="booksList"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Library System</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // List of Books with Author Names (You can replace this with an API call or database query)
+        const books = [
+            { title: "DEEP FINANCE Corporate Finance in the Information Age", author: "Glenn Hopper" },
+            { title: "Principles of Finance", author: "Rainford Knight" },
+            { title: "The Portable MBA in Finance and Accounting", author: "Theodore Grossman" },
+            { title: "Mergers & Inquisitions", author: "Wall Street" },
+            { title: "Mergers & Acquisitions", author: "Dr Peter Moles" },
+            { title: "Investment Banking", author: "Moelis" },
+            { title: "Leveraged Buyouts", author: "Joshua Harris" },
+            { title: "Preparation of STAR Method", author: "Ken Willams" },
+            { title: "IB in Valuation", author: "Joshua Pearl" },
+            { title: "Preparation of Finance Interviews", author: "Wall Street" },
+            { title: "Outcast Robin", author: "L.T. Meade" },
+            { title: "Wood Folk at school", author: "William J. Long" },
+            { title: "Gordon the Hero of Khartum", author: "der Held von Khartum" },
+            { title: "Röschen, Jaköble & other little people", author: "Anna Schiebe" },
+            { title: "Essay On Horse Subjects", author: "F.C Grenside, V. S" },
+            { title: "Chemical Conversations", author: "Ludwig Wunder" },
+            { title: "The Chevalier D’Eon de Beaumont", author: "LA chevaliere D EON" },
+            { title: "Scots Proverbs Ancient and Modern", author: "Allan Ramsay" },
+            { title: "Hay Fever A light Comedy in three acts", author: "Noel Coward" },
+            { title: "Address DELIVERED BEFORE THE BRITISH ASSOCIATION", author: "John Tyndall, F.R.S" },
+            { title: "The Problem Of The Rupee", author: "B.R. Ambedkar" },
+            { title: "The Anti-Slavery Examiner, Omnibus", author: "American Anti-Slavery Society" },
+            { title: "Pleiades Club Year book 1910", author: "Pleiades Club" },
+            { title: "The New Testament of our Lord and Savior Jesus Christ", author: "American Bible Union" },
+            { title: "Standard Methods for the examination of water and sewage", author: "American Chemical Society" }
+        ];
+
+        // Handle book search
+        document.getElementById('search-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const searchQuery = document.getElementById('searchQuery').value.toLowerCase();
+
+            // Filter books by title or author
+            const filteredBooks = books.filter(book =>
+                book.title.toLowerCase().includes(searchQuery) || book.author.toLowerCase().includes(searchQuery)
+            );
+
+            // Display search results
+            displayBooks(filteredBooks);
+        });
+
+        // Function to display search results
+        function displayBooks(filteredBooks) {
+            const booksList = document.getElementById('booksList');
+            booksList.innerHTML = '';
+
+            if (filteredBooks.length === 0) {
+                booksList.innerHTML = '<p>No books found</p>';
+            } else {
+                filteredBooks.forEach(book => {
+                    const bookDiv = document.createElement('div');
+                    bookDiv.classList.add('book');
+                    bookDiv.innerHTML = `
+                        <h3>${book.title}</h3>
+                        <p>Author: ${book.author}</p>
+                    `;
+                    booksList.appendChild(bookDiv);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

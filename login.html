@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Book Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-hover: #2980b9;
+            --secondary: #2ecc71;
+            --secondary-hover: #27ae60;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2.5rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .view-all-btn {
+            background: var(--secondary);
+        }
+
+        .view-all-btn:hover {
+            background: var(--secondary-hover);
+        }
+
+        .search-results {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .book-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .book-card h3 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            line-height: 1.3;
+        }
+
+        .book-card p {
+            color: var(--gray);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .book-card p i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+        .pdf-available {
+            color: var(--secondary) !important;
+            font-weight: bold;
+        }
+
+        .pdf-unavailable {
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray);
+            font-style: italic;
+            grid-column: 1 / -1;
+        }
+
+        .no-results {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            cursor: pointer;
+        }
+
+        .book-count {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .book-count span {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-book-open"></i> Library Book Search</h1>
+        
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search by book title or author name...">
+            <i class="fas fa-search search-icon" id="search-icon"></i>
+        </div>
+        
+        <div class="button-group">
+            <button id="search-btn">
+                <i class="fas fa-search"></i> Search
+            </button>
+            <button id="view-all-btn" class="view-all-btn">
+                <i class="fas fa-book"></i> View All Books
+            </button>
+        </div>
+        
+        <div id="book-count" class="book-count">Showing <span>25</span> books</div>
+        
+        <div id="search-results" class="search-results">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        // Complete Book Data
+        const books = [
+            {
+                title: 'DEEP FINANCE Corporate Finance in the Information Age',
+                author: 'Glenn Hopper',
+                category: 'Finance',
+                isbn: '978-1-63735-026-3',
+                copies: 2,
+                filename: 'Deep-Finance-Book-Full-121 1.pdf'
+            },
+            {
+                title: 'Principles of Finance',
+                author: 'Rainford Knight',
+                category: 'Finance',
+                isbn: '978-1-951693-54-1',
+                copies: 2,
+                filename: 'PrinciplesofFinance-WEB 1.pdf'
+            },
+            {
+                title: 'The Portable MBA in Finance and Accounting',
+                author: 'Theodore Grossman',
+                category: 'Accounting',
+                isbn: '978-0-470-48130-1',
+                copies: 1,
+                filename: 'MBA.pdf'
+            },
+            {
+                title: 'Mergers & Inquisitions',
+                author: 'Wall Street',
+                category: 'Finance',
+                isbn: '978-0-141-43951-8',
+                copies: 3,
+                filename: ''
+            },
+            {
+                title: 'Mergers & Acquisitions',
+                author: 'Dr Peter Moles',
+                category: 'Finance',
+                isbn: '978-0-316-76948-8',
+                copies: 2,
+                filename: 'Mergers-Acquisitions-Course-Taster.pdf'
+            },
+            {
+                title: 'Investment Banking',
+                author: 'Moelis',
+                category: 'Finance Management',
+                isbn: '978-1-334-85743-2',
+                copies: 2,
+                filename: ''
+            },
+            {
+                title: 'Leveraged Buyouts',
+                author: 'Joshua Harris',
+                category: 'Finance Management',
+                isbn: '978-1-118-42161-1',
+                copies: 2,
+                filename: ''
+            },
+            {
+                title: 'Preparation of STAR Method',
+                author: 'Ken Willams',
+                category: 'Interview',
+                isbn: 'NA',
+                copies: 1,
+                filename: 'STAR Method Interview Overview.pdf'
+            },
+            {
+                title: 'IB in Valuation',
+                author: 'Joshua Pearl',
+                category: 'Finance Management',
+                isbn: '978-0-470-44220-3',
+                copies: 2,
+                filename: 'Investment banking  Valuation.pdf'
+            },
+            {
+                title: 'Preparation of Finance Interviews',
+                author: 'Wall Street',
+                category: 'Interview',
+                isbn: '978-1-553-43567-1',
+                copies: 1,
+                filename: ''
+            },
+            {
+                title: 'Outcast Robin',
+                author: 'L.T. Meade',
+                category: 'Story book',
+                isbn: 'ebook#75665',
+                copies: 2,
+                filename: 'Outcast Robin.pdf'
+            },
+            {
+                title: 'Wood Folk at school',
+                author: 'William J. Long',
+                category: 'Story book',
+                isbn: 'ebook#22101',
+                copies: 2,
+                filename: 'Wood Folk at School.pdf'
+            },
+            {
+                title: 'Gordon the Hero of Khartum',
+                author: 'der Held von Khartum',
+                category: 'Story book',
+                isbn: 'ebook#75673',
+                copies: 2,
+                filename: 'Gordon.pdf'
+            },
+            {
+                title: 'Röschen, Jaköble & other little people',
+                author: 'Anna Schiebe',
+                category: 'Story book',
+                isbn: 'ebook#75672',
+                copies: 1,
+                filename: 'Röschen, Jaköble & other little people.pdf'
+            },
+            {
+                title: 'Essay On Horse Subjects',
+                author: 'F.C Grenside, V. S',
+                category: 'Story book',
+                isbn: 'ebook#75671',
+                copies: 1,
+                filename: 'Essays on Horse Subjects.pdf'
+            },
+            {
+                title: 'Chemical Conversations',
+                author: 'Ludwig Wunder',
+                category: 'Story book',
+                isbn: 'ebook#75670',
+                copies: 2,
+                filename: 'Chemical Conversations.pdf'
+            },
+            {
+                title: 'The Chevalier D\'Eon de Beaumont',
+                author: 'LA chevaliere D EON',
+                category: 'Story book',
+                isbn: 'ebook#75668',
+                copies: 1,
+                filename: 'The Chevalier D\'Eon de Beaumont.pdf'
+            },
+            {
+                title: 'Scots Proverbs Ancient and Modern, Selected from Allan Ramsay and others',
+                author: 'Allan Ramsay',
+                category: 'Story book',
+                isbn: 'ebook#75667',
+                copies: 1,
+                filename: 'Scots Proverbs, Ancient and Modern.pdf'
+            },
+            {
+                title: 'Hay Fever A light Comedy in three acts',
+                author: 'Noel Coward',
+                category: 'Story book',
+                isbn: 'ebook#75666',
+                copies: 3,
+                filename: 'Hay Fever.pdf'
+            },
+            {
+                title: 'Address DELIVERED BEFORE THE BRITISH ASSOCIATION',
+                author: 'John Tyndall, F.R.S',
+                category: 'Story book',
+                isbn: 'ebook#75664',
+                copies: 2,
+                filename: 'Address.pdf'
+            },
+            {
+                title: 'The Problem Of The Rupee ITS ORIGINS AND ITS SOLUTION',
+                author: 'B.R. Ambedkar',
+                category: 'Story book',
+                isbn: 'ebook#63132',
+                copies: 3,
+                filename: 'THE PROBLEM OF THE RUPEE.pdf'
+            },
+            {
+                title: 'The Anti-Slavery Examiner, Omnibus by American Anti-Slavery Society',
+                author: 'American Anti-Slavery Society',
+                category: 'Story book',
+                isbn: 'ebook#11275',
+                copies: 1,
+                filename: 'THE ANTI-SLAVERY EXAMINER.pdf'
+            },
+            {
+                title: 'Pleiades Club Year book 1910',
+                author: 'Pleiades Club',
+                category: 'Story book',
+                isbn: 'ebook#56423',
+                copies: 1,
+                filename: 'Pleiades Club Year Book 1910.pdf'
+            },
+            {
+                title: 'The New Testament of our Lord and Savior Jesus Christ',
+                author: 'American Bible Union',
+                category: 'Story book',
+                isbn: 'ebook#26361',
+                copies: 2,
+                filename: 'American Bible Union New Testament_.pdf'
+            },
+            {
+                title: 'Standard Methods for the examination of water and sewage',
+                author: 'American Chemical Society',
+                category: 'Story book',
+                isbn: 'ebook#61462',
+                copies: 3,
+                filename: 'Standard Methods For the Examination of Water and Sewage.pdf'
+            }
+        ];
+
+        // DOM Elements
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const searchIcon = document.getElementById('search-icon');
+        const viewAllBtn = document.getElementById('view-all-btn');
+        const searchResults = document.getElementById('search-results');
+        const bookCount = document.getElementById('book-count');
+
+        // Search function
+        function performSearch() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            if (searchTerm === '') {
+                displayResults(books);
+                return;
+            }
+            
+            const results = books.filter(book => {
+                const titleMatch = book.title.toLowerCase().includes(searchTerm);
+                const authorMatch = book.author.toLowerCase().includes(searchTerm);
+                return titleMatch || authorMatch;
+            });
+            
+            displayResults(results);
+        }
+
+        // Display search results
+        function displayResults(results) {
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="status-message no-results">No books found matching your search</div>';
+                bookCount.textContent = `Showing 0 books`;
+                return;
+            }
+            
+            let html = '';
+            results.forEach(book => {
+                html += `
+                    <div class="book-card">
+                        <h3>${book.title}</h3>
+                        <p><i class="fas fa-user"></i><strong>Author:</strong> ${book.author}</p>
+                        <p><i class="fas fa-tag"></i><strong>Category:</strong> ${book.category}</p>
+                        <p><i class="fas fa-barcode"></i><strong>ISBN:</strong> ${book.isbn}</p>
+                        <p><i class="fas fa-copy"></i><strong>Available Copies:</strong> ${book.copies}</p>
+                        <p><i class="fas fa-file-pdf"></i><strong>PDF:</strong> 
+                            ${book.filename ? '<span class="pdf-available">Available</span>' : '<span class="pdf-unavailable">Not available</span>'}
+                        </p>
+                    </div>
+                `;
+            });
+            
+            searchResults.innerHTML = html;
+            bookCount.innerHTML = `Showing <span>${results.length}</span> ${results.length === 1 ? 'book' : 'books'}`;
+            
+            // Add animation to cards
+            const cards = document.querySelectorAll('.book-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('animate-card');
+            });
+        }
+
+        // Redirect to index page
+        function redirectToIndex() {
+            window.location.href = 'index.html';
+        }
+
+        // Event listeners
+        searchBtn.addEventListener('click', performSearch);
+        searchIcon.addEventListener('click', performSearch);
+        viewAllBtn.addEventListener('click', redirectToIndex);  // Changed to redirect
+        
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Initialize with all books displayed
+        displayResults(books);
+    </script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+        /* Updated CSS for PDF linking */
+        .book-card {
+            text-decoration: none !important;
+            color: inherit !important;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            width: 280px;
+            margin: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+
+        .book-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .book-card h3 {
+            font-size: 1.2rem;
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            line-height: 1.3;
+        }
+
+        .book-card p {
+            font-size: 0.95rem;
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .book-card[href="#"] {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .book-card[href="#"]::after {
+            content: "PDF Not Available";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* Grid Layout */
+        #book-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        nav {
+            margin-top: 15px;
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: #3498db;
+        }
+
+        nav a:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 30px 20px;
+        }
+
+        main h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Library Management System</h1>
+    <nav>
+        <a href="#">Home</a>
+    </nav>
+</header>
+
+<main>
+    <h2>Explore Our Book Collection 📚</h2>
+    <div id="book-list"></div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Library System | Powered by Rakesh Panchal 🚀</p>
+</footer>
+
+<script>
+    // Updated book data with PDF filenames
+    const books = [
+        { 
+            title: "DEEP FINANCE Corporate Finance in the Information Age", 
+            author: "Glenn Hopper",
+            filename: "Deep-Finance-Book-Full-121 1.pdf"
+        },
+        { 
+            title: "Principles of Finance", 
+            author: "Rainford Knight",
+            filename: "PrinciplesofFinance-WEB 1.pdf"
+        },
+        { 
+            title: "The Portable MBA in Finance and Accounting", 
+            author: "Theodore Grossman",
+            filename: "MBA.pdf"
+        },
+        { 
+            title: "Mergers & Inquisitions", 
+            author: "Wall Street",
+            filename: ""
+        },
+        { 
+            title: "Mergers & Acquisitions", 
+            author: "Dr Peter Moles",
+            filename: "Mergers-Acquisitions-Course-Taster.pdf"
+        },
+        { 
+            title: "Investment Banking", 
+            author: "Moelis",
+            filename: ""
+        },
+        { 
+            title: "Leveraged Buyouts", 
+            author: "Joshua Harris",
+            filename: ""
+        },
+        { 
+            title: "Preparation of STAR Method", 
+            author: "Ken Willams",
+            filename: "STAR Method Interview Overview.pdf"
+        },
+        { 
+            title: "IB in Valuation", 
+            author: "Joshua Pearl",
+            filename: "Investment banking  Valuation.pdf"
+        },
+        { 
+            title: "Preparation of Finance Interviews", 
+            author: "Wall Street",
+            filename: ""
+        },
+        { 
+            title: "Outcast Robin", 
+            author: "L.T. Meade",
+            filename: "Outcast Robin.pdf"
+        },
+        { 
+            title: "Wood Folk at school", 
+            author: "William J. Long",
+            filename: "Wood Folk at School.pdf"
+        },
+        { 
+            title: "Gordon the Hero of Khartum", 
+            author: "der Held von Khartum",
+            filename: "Gordon.pdf"
+        },
+        { 
+            title: "Röschen, Jaköble & other little people", 
+            author: "Anna Schiebe",
+            filename: "Röschen, Jaköble & other little people.pdf"
+        },
+        { 
+            title: "Essay On Horse Subjects", 
+            author: "F.C Grenside, V. S",
+            filename: "Essays on Horse Subjects.pdf"
+        },
+        { 
+            title: "Chemical Conversations", 
+            author: "Ludwig Wunder",
+            filename: "Chemical Conversations.pdf"
+        },
+        { 
+            title: "The Chevalier D'Eon de Beaumont", 
+            author: "LA chevaliere D EON",
+            filename: "The Chevalier D'Eon de Beaumont.pdf"
+        },
+        { 
+            title: "Scots Proverbs Ancient and Modern, Selected from Allan Ramsay and others", 
+            author: "Allan Ramsay",
+            filename: "Scots Proverbs, Ancient and Modern.pdf"
+        },
+        { 
+            title: "Hay Fever A light Comedy in three acts", 
+            author: "Noel Coward",
+            filename: "Hay Fever.pdf"
+        },
+        { 
+            title: "Address DELIVERED BEFORE THE BRITISH ASSOCIATION", 
+            author: "John Tyndall, F.R.S",
+            filename: "Address.pdf"
+        },
+        { 
+            title: "The Problem Of The Rupee ITS ORIGINS AND ITS SOLUTION", 
+            author: "B.R. Ambedkar",
+            filename: "THE PROBLEM OF THE RUPEE.pdf"
+        },
+        { 
+            title: "The Anti-Slavery Examiner, Omnibus by American Anti-Slavery Society", 
+            author: "American Anti-Slavery Society",
+            filename: "THE ANTI-SLAVERY EXAMINER.pdf"
+        },
+        { 
+            title: "Pleiades Club Year book 1910", 
+            author: "Pleiades Club",
+            filename: "Pleiades Club Year Book 1910.pdf"
+        },
+        { 
+            title: "The New Testament of our Lord and Savior Jesus Christ", 
+            author: "American Bible Union",
+            filename: "American Bible Union New Testament_.pdf"
+        },
+        { 
+            title: "Standard Methods for the examination of water and sewage", 
+            author: "American Chemical Society",
+            filename: "Standard Methods For the Examination of Water and Sewage.pdf"
+        }
+    ];
+
+    // Modified display function with PDF links
+    function displayBooks() {
+        const bookList = document.getElementById('book-list');
+        
+        books.forEach(book => {
+            const bookCard = document.createElement('a');
+            bookCard.classList.add('book-card');
+            bookCard.href = book.filename ? `pdfs/${book.filename}` : '#';
+            if (book.filename) bookCard.target = "_blank";
+
+            // Random book image placeholder
+            const randomImg = `https://picsum.photos/300/200?random=${Math.floor(Math.random() * 100)}`;
+
+            bookCard.innerHTML = `
+                <img src="${randomImg}" alt="${book.title}">
+                <h3>${book.title}</h3>
+                <p>Author: ${book.author}</p>
+            `;
+
+            // Handle books without PDFs
+            if (!book.filename) {
+                bookCard.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alert("PDF not available for this book");
+                });
+            }
+
+            bookList.appendChild(bookCard);
+        });
+    }
+
+    // Initialize
+    window.onload = displayBooks;
+</script>
+
+</body>
+</html>
